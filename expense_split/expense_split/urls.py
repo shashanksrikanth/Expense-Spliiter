@@ -16,9 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from groups.api_views import GroupList, GroupCreate
+from groups.views import create_group
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/groups', GroupList.as_view()),
-    path('api/v1/add', GroupCreate.as_view())
+    path('api/v1/create', GroupCreate.as_view()),
+    path('create_group/', create_group, name='create_group')
 ]
