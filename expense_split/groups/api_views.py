@@ -19,4 +19,4 @@ class GroupCreate(CreateAPIView):
                 raise ValidationError({'members': 'Members cannot be 0'})
         except Exception as e:
             print(e)
-        return super().create(request, *args, **kwargs)
+        return super().create(request, *args, **kwargs)  
