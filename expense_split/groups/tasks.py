@@ -5,7 +5,7 @@ from sendgrid.helpers.mail import Mail
 
 def send_email(members, amount, reason):
     try:
-        sg = SendGridAPIClient('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')
+        sg = SendGridAPIClient('my_api_key')
         subject_line = 'Expense Split Notification'
         individual_members = members.split(',')
         amount_due = amount/len(individual_members)
