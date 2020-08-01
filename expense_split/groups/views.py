@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from django.core.exceptions import ValidationError, ObjectDoesNotExist, PermissionDenied
 from .models import Group
 from .forms import GroupForm, EmailForm, DeleteForm
+from .tasks import send_email
 from werkzeug.security import generate_password_hash, check_password_hash
 # Create your views here.
 
@@ -13,11 +13,19 @@ def create_group(request):
             members = form.cleaned_data['members']
             password = form.cleaned_data['password']
             if group_name is None:
-                raise ValidationError({'group_name': 'Group name cannot be empty'})
+                note = "Provide group name"
+                return render(request, 'creategroup.html', {'form': form, 'note': note})
             if members is None:
-                raise ValidationError({'members': 'Members cannot be 0'})
+                note = "Provide members"
+                return render(request, 'creategroup.html', {'form': form, 'note': note})
             if password is None:
-                raise ValidationError({'password': 'Password cannot be empty'})
+                note = "Provide password"
+                return render(request, 'creategroup.html', {'form': form, 'note': note})
+            allGroups = Group.objects.all()
+            for group in allGroups:
+                if group.group_name == group_name:
+                    note = "Group exists. Use different group name"
+                    return render(request, 'creategroup.html', {'form': form, 'note': note})
             group = Group()
             group.group_name = group_name
             group.members = members
@@ -36,13 +44,18 @@ def email_group(request):
             group_name = form.cleaned_data['group_name']
             group = Group.objects.get(group_name=group_name)
             if group is None:
-                raise ObjectDoesNotExist
+                note = "Group with name {} does not exist".format(group_name)
+                return render(request, 'emailgroup.html', {'form': form, 'note': note})
             if not check_password_hash(group.password, form.cleaned_data['password']):
-                print(group.password)
-                raise PermissionDenied
+                note = "Incorrect password"
+                return render(request, 'emailgroup.html', {'form': form, 'note': note})
             amount = form.cleaned_data['amount']
             reason = form.cleaned_data['reason']
-            note = "Message successfully sent"
+            email_status = send_email(group.members, amount, reason)
+            if email_status:
+                note = "Message successfully sent"
+            else:
+                note = "Message not successfully sent"
             return render(request, 'emailgroup.html', {'form': form, 'note': note})
     else:
         form = EmailForm()
@@ -55,11 +68,13 @@ def delete_group(request):
             group_name = form.cleaned_data['group_name']
             group = Group.objects.get(group_name=group_name)
             if group is None:
-                raise ObjectDoesNotExist
+                note = "Group with name {} does not exist".format(group_name)
+                return render(request, 'deletegroup.html', {'form': form, 'note': note})
             if not check_password_hash(group.password, form.cleaned_data['password']):
-                print(group.password)
-                raise PermissionDenied
-            group.delete()
+                note = "Incorrect password"
+                return render(request, 'deletegroup.html', {'form': form, 'note': note})
+            for g in group:
+                g.delete()
             note = "Group successfully deleted"
             return render(request, 'deletegroup.html', {'form': form, 'note': note})
     else:
