@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Group
-from .forms import GroupForm, EmailForm, DeleteForm
+from .forms import GroupForm, EmailForm, DeleteForm, UpdateForm
 from .tasks import send_email
 from werkzeug.security import generate_password_hash, check_password_hash
 # Create your views here.
@@ -80,6 +80,27 @@ def delete_group(request):
     else:
         form = DeleteForm()
         return render(request, 'deletegroup.html', {'form': form})
+
+def update_group(request):
+    if request.method == 'POST':
+        form = UpdateForm(request.POST)
+        if form.is_valid():
+            group_name = form.cleaned_data['group_name']
+            group = Group.objects.get(group_name=group_name)
+            if group is None:
+                note = "Group with name {} does not exist".format(group_name)
+                return render(request, 'updategroup.html', {'form': form, 'note': note})
+            if not check_password_hash(group.password, form.cleaned_data['password']):
+                note = "Incorrect password"
+                return render(request, 'updategroup.html', {'form': form, 'note': note})
+            new_members = "{},{}".format(group.members, form.cleaned_data['members'])
+            group.members = new_members
+            group.save(update_fields=['members'])
+            note = "Group successfully updated"
+            return render(request, 'updategroup.html', {'form': form, 'note': note})
+    else:
+        form = UpdateForm()
+        return render(request, 'updategroup.html', {'form': form})
 
 def homepage(request):
     return render(request, 'homepage.html')

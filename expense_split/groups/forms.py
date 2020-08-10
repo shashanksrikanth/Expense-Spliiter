@@ -14,3 +14,8 @@ class EmailForm(forms.Form):
 class DeleteForm(forms.Form):
     group_name = forms.CharField(max_length=200)
     password = forms.CharField(max_length=200)
+
+class UpdateForm(forms.Form):
+    group_name = forms.CharField(max_length=200)
+    password = forms.CharField(max_length=200)
+    members = forms.CharField(max_length=20000000000000)

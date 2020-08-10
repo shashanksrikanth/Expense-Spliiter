@@ -3,7 +3,11 @@
 ## Overview
 Expense-Split is a bill splitting Django application. A group of users can register as a group. After registration, one person can log in and provide the total amount. Expense-Split will then send an email to all the members of the group with how much each has to pay. 
 
-You can register a Group, send an email to the members of the group, or delete a Group if needed. 
+With Expense-Split, you can do the following:
+1. Register a Group
+2. Send an email to the members of the Group
+3. Delete a Group
+4. Add a new member to the Group
 
 For developing purposes, an API has also beeen created to list and create groups. The URLs for these APIs are given in the `urls.py` file in the repository.
 
