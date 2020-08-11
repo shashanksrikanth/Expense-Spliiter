@@ -1,0 +1,13 @@
+<h1 style="text-align: center;"> Update a Group </h1>
+
+<h2 style="text-align: center;"> {{ note }} </h2>
+
+<form style="text-align: center;" action="{% url 'update_group' %}" method="post">
+    {% csrf_token %}
+    <p>
+        {{ form.as_p }}
+    </p>
+    <input type="submit" value="Submit">
+</form>
+
+<a href="{% url 'homepage' %}">Go to Home</a>
