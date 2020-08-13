@@ -19,4 +19,7 @@ For developing purposes, an API has also beeen created to list and create groups
 5. Go to `localhost:8000` and you should see the application running.
 
 ## Further Work
-A better way to hide the API key needs to be researched. For now, I have simply not included it in the repository. 
+I am currently working on the following new features for this project:
+1. Adding an option to add an image to the email that is sent to the group
+2. Adding a data dashboard for expense reports
+3. A better way to hide the API key needs to be researched. For now, I have simply not included it in the repository. 
